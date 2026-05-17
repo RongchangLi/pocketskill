@@ -5,6 +5,7 @@ DEFAULT_REPO_URL="https://github.com/RongchangLi/pocketskill.git"
 INSTALL_DIR="${POCKETSKILL_HOME:-$HOME/.pocketskill}"
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 CODEX_CONFIG="$HOME/.codex/config.toml"
+CODEX_PLUGIN_CACHE="$HOME/.codex/plugins/cache/pocketskill/my-skill"
 
 DETECTED_TOOLS=()
 ASSUME_YES=false
@@ -148,6 +149,16 @@ print(next_version)
 PYEOF
 }
 
+plugin_version() {
+    python3 - "$REPO_DIR/plugins/my-skill/.codex-plugin/plugin.json" << 'PYEOF'
+import json
+import sys
+
+with open(sys.argv[1]) as f:
+    print(json.load(f)["version"])
+PYEOF
+}
+
 # ── Detect installed tools ──────────────────────────────────────────────
 
 detect_tools() {
@@ -275,8 +286,24 @@ EOF
         codex plugin marketplace add "$REPO_DIR" 2>/dev/null || true
         codex plugin marketplace upgrade pocketskill 2>/dev/null || true
         echo "  ✓ Codex pocketskill 市场已重新注册"
+        refresh_codex_cache
         echo "  ℹ 如果当前 Codex 会话没有出现新增 skill，请开启新会话"
     fi
+}
+
+refresh_codex_cache() {
+    local version target
+    version="$(plugin_version)"
+    target="$CODEX_PLUGIN_CACHE/$version"
+
+    if [ -d "$target" ]; then
+        echo "  - Codex my-skill 缓存已存在: $version"
+        return
+    fi
+
+    mkdir -p "$(dirname "$target")"
+    cp -R "$REPO_DIR/plugins/my-skill" "$target"
+    echo "  ✓ Codex my-skill 缓存已写入: $version"
 }
 
 # ── Main ─────────────────────────────────────────────────────────────────
