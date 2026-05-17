@@ -56,6 +56,12 @@ cd pocketskill
 /my-skill:share-skill
 ```
 
+更新 Pocket Skill：
+
+```text
+/my-skill:update-my-skill
+```
+
 ### Codex
 
 创建 skill：
@@ -74,6 +80,12 @@ $git-workflow
 
 ```text
 $share-skill
+```
+
+更新 Pocket Skill：
+
+```text
+$update-my-skill
 ```
 
 ### 通用 Agent
@@ -128,6 +140,7 @@ Follow these instructions when handling Git work for me...
 | --- | --- | --- | --- |
 | `create-skill` | 创建新的公开或私有 skill | `/my-skill:create-skill` | `$create-skill` |
 | `share-skill` | 把公开 skill 通过 GitHub PR 分享出去 | `/my-skill:share-skill` | `$share-skill` |
+| `update-my-skill` | 从 `origin/main` 更新 Pocket Skill，并刷新插件注册 | `/my-skill:update-my-skill` | `$update-my-skill` |
 | `claude-save-token` | 让 Claude Code 更省 token 地工作 | `/my-skill:claude-save-token` | `$claude-save-token` |
 | `codex-token-saving` | 让 Codex 更省 token 地工作 | `/my-skill:codex-token-saving` | `$codex-token-saving` |
 
@@ -144,6 +157,7 @@ pocketskill/
 │       └── skills/
 │           ├── create-skill/
 │           ├── share-skill/
+│           ├── update-my-skill/
 │           └── private-*/                # 私有 skill，默认忽略
 ├── templates/
 │   └── SKILL.md.template
@@ -153,6 +167,20 @@ pocketskill/
 ## 更新
 
 如果你使用一键安装，后续可以这样更新：
+
+Claude Code：
+
+```text
+/my-skill:update-my-skill
+```
+
+Codex：
+
+```text
+$update-my-skill
+```
+
+也可以手动更新：
 
 ```bash
 cd ~/.pocketskill
