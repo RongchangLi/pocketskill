@@ -1,0 +1,12 @@
+{
+  "name": "my-skill",
+  "version": "1.0.0",
+  "description": "Manage your own portable agent skills and reuse them across Claude Code, Codex, and general agents",
+  "author": {
+    "name": "Pocket Skill Community"
+  },
+  "interface": {
+    "displayName": "My Skill"
+  },
+  "skills": "./skills/"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "pocketskill",
+  "interface": {
+    "displayName": "Pocket Skill"
+  },
+  "plugins": [
+    {
+      "name": "my-skill",
+      "source": {
+        "source": "local",
+        "path": "./plugins/my-skill"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Engineering"
+    }
+  ]
+}

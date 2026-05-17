@@ -1,0 +1,16 @@
+{
+  "name": "my-skill",
+  "version": "1.0.0",
+  "description": "Manage your own portable agent skills and reuse them across Codex, Claude Code, and general agents",
+  "author": {
+    "name": "Pocket Skill Community"
+  },
+  "interface": {
+    "displayName": "My Skill",
+    "shortDescription": "Manage portable personal agent skills",
+    "longDescription": "Create, organize, and share your own Markdown-based skills. Reuse the same SKILL.md files across Codex, Claude Code, Cursor, ChatGPT Projects, custom agents, and other general agent tools.",
+    "developerName": "Pocket Skill Community",
+    "category": "Engineering"
+  },
+  "skills": "./skills/"
+}

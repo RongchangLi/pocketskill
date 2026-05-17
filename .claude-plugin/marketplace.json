@@ -1,0 +1,14 @@
+{
+  "name": "pocketskill",
+  "owner": {
+    "name": "Pocket Skill"
+  },
+  "description": "Manage your own Markdown-based skills and migrate them across Claude Code, Codex, and general agents.",
+  "plugins": [
+    {
+      "name": "my-skill",
+      "description": "Create, manage, and share portable personal agent skills",
+      "source": "./plugins/my-skill"
+    }
+  ]
+}
