@@ -151,6 +151,9 @@ Follow these instructions when handling Git work for me...
 | Skill | 用途 | Claude Code | Codex |
 | --- | --- | --- | --- |
 | `create-skill` | 创建新的公开或私有 skill | `/my-skill:create-skill` | `$create-skill` |
+| `edit-skill` | 安全修改已有 skill，并刷新本地库 | `/my-skill:edit-skill` | `$edit-skill` |
+| `rename-skill` | 安全重命名 skill 目录和元数据 | `/my-skill:rename-skill` | `$rename-skill` |
+| `delete-skill` | 删除或归档已有 skill，并刷新本地库 | `/my-skill:delete-skill` | `$delete-skill` |
 | `share-skill` | 把公开 skill 通过 GitHub PR 分享出去 | `/my-skill:share-skill` | `$share-skill` |
 | `refresh-my-skill` | 刷新本地 `my-skill` 插件注册，不拉取远程 | `/my-skill:refresh-my-skill` | `$refresh-my-skill` |
 | `update-my-skill` | 从 `origin/main` 更新 Pocket Skill，并刷新插件注册 | `/my-skill:update-my-skill` | `$update-my-skill` |
@@ -169,6 +172,9 @@ pocketskill/
 │       ├── .claude-plugin/plugin.json
 │       └── skills/
 │           ├── create-skill/
+│           ├── edit-skill/
+│           ├── rename-skill/
+│           ├── delete-skill/
 │           ├── share-skill/
 │           ├── refresh-my-skill/
 │           ├── update-my-skill/

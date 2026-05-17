@@ -334,6 +334,9 @@ main() {
     if $has_claude; then
         echo "  ── Claude Code ──"
         echo "  创建  /my-skill:create-skill    交互式创建新技能"
+        echo "  修改  /my-skill:edit-skill      安全修改已有技能"
+        echo "  改名  /my-skill:rename-skill    安全重命名技能"
+        echo "  删除  /my-skill:delete-skill    删除或归档技能"
         echo "  使用  /my-skill:<技能名>       例如 /my-skill:git-workflow"
         echo "  刷新  /my-skill:refresh-my-skill 刷新本地技能库"
         echo "  更新  /my-skill:update-my-skill 从 main 拉取并刷新插件"
@@ -344,6 +347,9 @@ main() {
     if $has_codex; then
         echo "  ── Codex ──"
         echo "  创建  \$create-skill            交互式创建新技能"
+        echo "  修改  \$edit-skill              安全修改已有技能"
+        echo "  改名  \$rename-skill            安全重命名技能"
+        echo "  删除  \$delete-skill            删除或归档技能"
         echo "  使用  \$<技能名>                例如 \$git-workflow"
         echo "  刷新  \$refresh-my-skill        刷新本地技能库"
         echo "  更新  \$update-my-skill         从 main 拉取并刷新插件"
