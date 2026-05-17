@@ -8,6 +8,10 @@ allowed-tools: [bash, git]
 
 When the user invokes this skill, rename an existing Pocket Skill.
 
+## Tool Expectations
+
+This workflow may use shell commands and `git` commands such as `git mv`.
+
 All operations must happen from the pocketskill repository root. First locate it:
 
 - Use the current working directory if it contains `plugins/my-skill/skills/` and `install.sh`.
@@ -24,22 +28,25 @@ Validate both base names:
 
 - Must match `^[a-z0-9]+(-[a-z0-9]+)*$`
 - Must not contain `/`, `\`, `.`, `..`, spaces, shell metacharacters, or quotes
-- For private skills, preserve the `private-` prefix unless the user explicitly asks to change public/private status
 
-Resolve paths:
+Resolve the old path by searching `my-skills/` and `private-skills/`:
 
 ```
-plugins/my-skill/skills/<old-name>/SKILL.md
-plugins/my-skill/skills/<new-name>/SKILL.md
+plugins/my-skill/skills/my-skills/<old-name>/SKILL.md
+plugins/my-skill/skills/private-skills/<old-name>/SKILL.md
 ```
 
-Stop if the old skill does not exist or the new target already exists.
+- If the old skill is in `manage-skills/`, refuse with "Built-in management skills cannot be renamed."
+- Stop if the old skill does not exist or the new target already exists in either `my-skills/` or `private-skills/`.
+
+The new skill stays in the same parent directory as the old one unless the user explicitly asks to move between `my-skills/` and `private-skills/`.
 
 ### 2. Rename Safely
 
+- The new path is `<repo-root>/plugins/my-skill/skills/<parent-dir>/<new-name>/SKILL.md`.
 - If inside a git repository and the old skill is tracked, use `git mv`.
 - Otherwise use a normal directory move.
-- Update the moved `SKILL.md` frontmatter `name` to the new directory name.
+- Update the moved `SKILL.md` frontmatter `name` to the new skill name.
 - Update the first Markdown heading if it is clearly derived from the old name.
 - Keep `description` unchanged unless the user asked to revise it.
 
@@ -58,7 +65,7 @@ Update obvious references in docs or install output, such as README call example
 After renaming:
 
 - Confirm only the new directory exists.
-- Confirm `SKILL.md` frontmatter `name` equals the new directory name.
+- Confirm `SKILL.md` frontmatter `name` equals the new skill name.
 - If inside a git repository, run `git status --short`.
 - Run local refresh from the pocketskill root:
 

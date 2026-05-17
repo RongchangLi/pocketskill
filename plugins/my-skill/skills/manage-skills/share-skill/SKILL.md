@@ -8,6 +8,10 @@ allowed-tools: [git, gh]
 
 When the user invokes this skill, you are helping them share a skill to the community via GitHub PR.
 
+## Tool Expectations
+
+This workflow may use `git` and `gh` commands.
+
 All operations must happen from the pocketskill repository root. First locate it:
 
 - Use the current working directory if it contains `plugins/my-skill/skills/`.
@@ -27,14 +31,13 @@ Run checks before listing or committing:
 
 ### 2. Find Shareable Skills
 
-List only changed public skill directories under `plugins/my-skill/skills/`.
+Only share skills from `plugins/my-skill/skills/my-skills/`. Never share from `private-skills/` or `manage-skills/`.
 
 Rules:
 
-- Include directories with untracked, modified, or staged changes shown by `git status --short -- plugins/my-skill/skills`.
-- Exclude any directory whose name starts with `private-`.
+- Include directories with untracked, modified, or staged changes shown by `git status --short -- plugins/my-skill/skills/my-skills`.
 - Exclude `.DS_Store`, editor files, cache files, and directories without `SKILL.md`.
-- Do not list unchanged built-in skills unless the user explicitly asks to share an existing committed skill.
+- Do not list unchanged skills unless the user explicitly asks to share an existing committed skill.
 - If nothing is shareable, say so and stop.
 
 Show the candidate names and ask the user to choose one or `all`.
@@ -44,7 +47,7 @@ Show the candidate names and ask the user to choose one or `all`.
 For every selected skill, review `SKILL.md` before committing:
 
 - Frontmatter must include non-empty `name` and `description`.
-- Public skill names must match `^[a-z0-9]+(-[a-z0-9]+)*$` and must not start with `private-`.
+- Skill names must match `^[a-z0-9]+(-[a-z0-9]+)*$`.
 - The body must contain real instructions, not just the template placeholder.
 - Check for obvious secrets or private material: API keys, tokens, passwords, personal paths, private repo URLs, or private-skill references.
 
@@ -61,9 +64,9 @@ Create a dedicated branch before committing:
 Use path-limited staging and committing so unrelated user changes are not included:
 
 1. `git switch -c <branch-name>`
-2. `git add -- plugins/my-skill/skills/<skill-name>/` for each selected skill
-3. Review `git diff --cached --name-only` and confirm every staged path is inside a selected public skill directory
-4. `git commit -m "share: add <skill-name> skill" -- plugins/my-skill/skills/<skill-name>/` for one skill
+2. `git add -- plugins/my-skill/skills/my-skills/<skill-name>/` for each selected skill
+3. Review `git diff --cached --name-only` and confirm every staged path is inside `plugins/my-skill/skills/my-skills/`
+4. `git commit -m "share: add <skill-name> skill" -- plugins/my-skill/skills/my-skills/<skill-name>/` for one skill
 5. For multiple skills, use `git commit -m "share: add community skills" -- <selected skill dirs>`
 
 If unrelated paths are staged, do not run plain `git commit`; either commit with the selected pathspecs above or ask the user how to handle the staged changes.

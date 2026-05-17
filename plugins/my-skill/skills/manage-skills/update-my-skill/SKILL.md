@@ -8,6 +8,10 @@ allowed-tools: [git, bash]
 
 When the user invokes this skill, update their Pocket Skill installation from `origin/main`, then refresh the `my-skill` plugin registration. If the user only wants to refresh local skill changes without pulling from remote, use `refresh-my-skill` instead.
 
+## Tool Expectations
+
+This workflow may use `git` and shell commands.
+
 All operations must happen from the pocketskill repository root. First locate it:
 
 - Use the current working directory if it contains `plugins/my-skill/skills/` and `install.sh`.
@@ -56,7 +60,8 @@ Do not promise hot reload for the current running conversation. If the refreshed
 Verify the update:
 
 - `git status --short --branch` should show the local branch tracking `origin/main`.
-- Confirm `plugins/my-skill/skills/` exists.
+- Confirm `plugins/my-skill/skills/` and its subdirectories (`my-skills/`, `manage-skills/`, `private-skills/`) exist.
 - If Claude Code or Codex was detected by `install.sh`, report the command users can run next, for example `/my-skill:create-skill` or `$create-skill`.
+- When pulling from remote, offer to pull `my-skills` only, `manage-skills` only, or `all` (default).
 
 Keep the final response short: report whether the pull succeeded, whether plugin registration was refreshed, and any manual action still needed.

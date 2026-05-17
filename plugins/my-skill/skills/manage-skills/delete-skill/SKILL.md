@@ -8,6 +8,10 @@ allowed-tools: [bash, git]
 
 When the user invokes this skill, remove an existing Pocket Skill from their local library.
 
+## Tool Expectations
+
+This workflow may use shell commands and `git` commands such as `git rm`.
+
 All operations must happen from the pocketskill repository root. First locate it:
 
 - Use the current working directory if it contains `plugins/my-skill/skills/` and `install.sh`.
@@ -18,9 +22,11 @@ All operations must happen from the pocketskill repository root. First locate it
 
 ### 1. Identify The Target
 
-- If the user did not name a skill, list directories under `plugins/my-skill/skills/` that contain `SKILL.md`, then ask which one to remove.
+- If the user did not name a skill, list directories under `plugins/my-skill/skills/my-skills/` and `plugins/my-skill/skills/private-skills/` that contain `SKILL.md`, then ask which one to remove.
+- Never list or offer skills from `plugins/my-skill/skills/manage-skills/`. Built-in management skills cannot be deleted through this skill.
 - Skip `.DS_Store`, cache files, and directories without `SKILL.md`.
-- Confirm the target path is exactly `plugins/my-skill/skills/<skill-name>/`.
+- If the user explicitly names a skill in `manage-skills/`, refuse with the message "Built-in management skills cannot be deleted."
+- Confirm the target path is `<repo-root>/plugins/my-skill/skills/<parent-dir>/<skill-name>/` where `<parent-dir>` is `my-skills` or `private-skills`.
 - If the target does not exist, stop.
 
 ### 2. Confirm Intent
@@ -29,29 +35,29 @@ Show the user:
 
 - skill name
 - absolute path
-- whether it is public or private
+- whether it is public (`my-skills/`) or private (`private-skills/`)
 - whether it appears tracked by git, if inside a git repository
 
 Ask whether they want to:
 
 1. Delete it
-2. Archive it as a private skill
+2. Archive it (move to `private-skills/`)
 
-Never remove a skill without explicit confirmation. For built-in Pocket Skill workflows such as `create-skill`, `edit-skill`, `rename-skill`, `delete-skill`, `refresh-my-skill`, `update-my-skill`, or `share-skill`, warn that removing it changes the management tool itself and ask for a second confirmation.
+Never remove a skill without explicit confirmation.
 
 ### 3. Delete Or Archive
 
 For delete:
 
-- If inside a git repository and the skill is tracked, use `git rm -r -- plugins/my-skill/skills/<skill-name>/`.
+- If inside a git repository and the skill is tracked, use `git rm -r -- plugins/my-skill/skills/<parent-dir>/<skill-name>/`.
 - Otherwise remove only the exact target directory after confirmation.
 - Do not use broad globs.
 
 For archive:
 
-- Move the directory to `plugins/my-skill/skills/private-archived-<skill-name>/`.
-- If that archive target already exists, ask for a different archive name.
-- Update the archived `SKILL.md` frontmatter `name` to the archive directory name.
+- If the skill is already in `private-skills/`, tell the user it is already private.
+- Otherwise move the directory to `plugins/my-skill/skills/private-skills/<skill-name>/`.
+- If that archive target already exists, ask for a different name.
 
 ### 4. Clean References
 

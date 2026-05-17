@@ -5,4 +5,17 @@ description: Brief description used for auto-trigger matching
 
 # Skill Title
 
-Write your instructions here. The agent will follow these when the skill is invoked.
+## Instructions
+
+Write the workflow, rules, and safety checks the agent should follow when this skill is invoked.
+
+Keep the skill focused:
+
+- Describe when to use it.
+- Define the expected workflow.
+- Call out anything the agent must not do.
+- Include validation or refresh steps when relevant.
+
+## Portability Notes
+
+If you add non-standard frontmatter fields, repeat their meaning in the body. Some agents only read `name` and `description`.

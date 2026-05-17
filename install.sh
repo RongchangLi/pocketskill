@@ -68,7 +68,7 @@ parse_args() {
 
 has_repo_layout() {
     local dir="$1"
-    [ -d "$dir/plugins/my-skill/skills" ] && [ -f "$dir/templates/SKILL.md.template" ]
+    [ -d "$dir/plugins/my-skill/skills/manage-skills" ] && [ -f "$dir/templates/SKILL.md.template" ]
 }
 
 resolve_repo_dir() {
@@ -384,9 +384,10 @@ main() {
         echo ""
     fi
 
-    echo "  💡 创建时选「私有」→ 技能名前缀 private-，自动被 .gitignore 忽略。"
-    echo "  💡 通用 Agent 可直接读取任意 plugins/my-skill/skills/<name>/SKILL.md。"
-    echo "  💡 公开技能欢迎 PR 到 plugins/my-skill/skills/，帮助更多开发者！"
+    echo "  💡 创建时选「私有」→ 存入 private-skills/，自动被 .gitignore 忽略。"
+    echo "  💡 用户公开技能：plugins/my-skill/skills/my-skills/<name>/SKILL.md"
+    echo "  💡 私有技能：plugins/my-skill/skills/private-skills/<name>/SKILL.md"
+    echo "  💡 公开技能欢迎 PR 到 plugins/my-skill/skills/my-skills/，帮助更多开发者！"
     echo ""
 }
 

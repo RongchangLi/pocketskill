@@ -8,6 +8,10 @@ allowed-tools: [bash, git]
 
 When the user invokes this skill, refresh the local Pocket Skill plugin registration. Do not pull, fetch, or update from remote. Use `update-my-skill` when the user wants to pull from `origin/main` first.
 
+## Tool Expectations
+
+This workflow may use shell commands and `git` status checks.
+
 All operations must happen from the pocketskill repository root. First locate it:
 
 - Use the current working directory if it contains `plugins/my-skill/skills/` and `install.sh`.
@@ -42,7 +46,7 @@ This skill must not run:
 
 ### 3. Verify
 
-- Confirm `plugins/my-skill/skills/` still exists.
+- Confirm `plugins/my-skill/skills/` and its subdirectories (`my-skills/`, `manage-skills/`, `private-skills/`) still exist.
 - If inside a git repository, run `git status --short --branch`.
 - If plugin manifest files changed because the version was bumped, report that clearly.
 

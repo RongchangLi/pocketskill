@@ -1,5 +1,5 @@
-# Ignore private skills (prefix matching)
-plugins/my-skill/skills/private-*/
+# Ignore private skills directory
+plugins/my-skill/skills/private-skills/
 
 # OS files
 .DS_Store
