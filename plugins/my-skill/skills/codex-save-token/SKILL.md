@@ -1,6 +1,7 @@
 ---
 name: codex-save-token
 description: Use when the user asks Codex to save tokens, reduce context usage, keep answers concise, or work in a token-efficient way.
+status: 暂不满意，开发中
 ---
 
 # Codex Save Token

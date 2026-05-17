@@ -1,6 +1,7 @@
 ---
 name: claude-save-token
 description: Use when the user wants to reduce token usage in Claude Code, keep answers short, or work token-efficiently.
+status: 暂不满意，开发中
 ---
 
 # Claude Save Token

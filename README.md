@@ -157,8 +157,8 @@ Follow these instructions when handling Git work for me...
 | `share-skill` | 把公开 skill 通过 GitHub PR 分享出去 | `/my-skill:share-skill` | `$share-skill` |
 | `refresh-my-skill` | 刷新本地 `my-skill` 插件注册，不拉取远程 | `/my-skill:refresh-my-skill` | `$refresh-my-skill` |
 | `update-my-skill` | 从 `origin/main` 更新 Pocket Skill，并刷新插件注册 | `/my-skill:update-my-skill` | `$update-my-skill` |
-| `claude-save-token` | 让 Claude Code 更省 token 地工作 | `/my-skill:claude-save-token` | `$claude-save-token` |
-| `codex-save-token` | 让 Codex 更省 token 地工作 | `/my-skill:codex-save-token` | `$codex-save-token` |
+| `claude-save-token` | 让 Claude Code 更省 token 地工作（状态：暂不满意，开发中） | `/my-skill:claude-save-token` | `$claude-save-token` |
+| `codex-save-token` | 让 Codex 更省 token 地工作（状态：暂不满意，开发中） | `/my-skill:codex-save-token` | `$codex-save-token` |
 
 ## 目录结构
 
