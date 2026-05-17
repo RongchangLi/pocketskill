@@ -63,4 +63,21 @@ Create `SKILL.md` from `templates/SKILL.md.template`, replacing:
 - `Brief description used for auto-trigger matching` with the user-provided description
 - `Skill Title` with a title-cased version of the final skill name
 
-After creation, report the absolute path and remind the user to fill in the instructions body. Do not edit unrelated files.
+### 4. Refresh Plugin Registration
+
+After creating the file, automatically refresh Pocket Skill registration:
+
+```
+./install.sh --yes --bump-plugin-version
+```
+
+Run it from the pocketskill repository root. This increments the `my-skill` plugin patch version, re-registers the local marketplace, and refreshes the plugin cache for detected tools when their CLIs support it.
+
+Important:
+
+- The version bump is intentional. It gives plugin managers a new version to install after a local skill is added.
+- Do not promise that the current running Claude Code or Codex conversation will immediately see the new skill.
+- If the new skill does not appear after refresh, tell the user to open a new session or restart the tool.
+- General agents can use the new skill immediately by reading the created `SKILL.md` directly.
+
+After creation and refresh, report the absolute path, whether refresh ran, and remind the user to fill in the instructions body. Do not edit unrelated files.

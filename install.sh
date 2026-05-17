@@ -8,6 +8,7 @@ CODEX_CONFIG="$HOME/.codex/config.toml"
 
 DETECTED_TOOLS=()
 ASSUME_YES=false
+BUMP_PLUGIN_VERSION=false
 REPO_URL="$DEFAULT_REPO_URL"
 REPO_DIR=""
 
@@ -23,6 +24,8 @@ Usage:
 
 Options:
   -y, --yes           Run non-interactively and accept defaults
+  --bump-plugin-version
+                      Increment the my-skill plugin patch version before refresh
   --install-dir PATH  Install/update Pocket Skill at PATH (default: ~/.pocketskill)
   --repo-url URL      Git repository to clone when running from curl
   -h, --help          Show this help
@@ -34,6 +37,9 @@ parse_args() {
         case "$1" in
             -y|--yes)
                 ASSUME_YES=true
+                ;;
+            --bump-plugin-version)
+                BUMP_PLUGIN_VERSION=true
                 ;;
             --install-dir)
                 INSTALL_DIR="${2:?Missing value for --install-dir}"
@@ -104,6 +110,42 @@ resolve_repo_dir() {
     echo "  → 安装 Pocket Skill 到 $INSTALL_DIR"
     git clone "$REPO_URL" "$INSTALL_DIR"
     REPO_DIR="$INSTALL_DIR"
+}
+
+# ── Plugin versioning ───────────────────────────────────────────────────
+
+bump_plugin_version() {
+    python3 - "$REPO_DIR/plugins/my-skill/.codex-plugin/plugin.json" "$REPO_DIR/plugins/my-skill/.claude-plugin/plugin.json" << 'PYEOF'
+import json
+import re
+import sys
+from pathlib import Path
+
+paths = [Path(arg) for arg in sys.argv[1:]]
+versions = []
+
+for path in paths:
+    with path.open() as f:
+        data = json.load(f)
+    version = data.get("version", "0.0.0")
+    match = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)", version)
+    if not match:
+        raise SystemExit(f"Unsupported plugin version in {path}: {version}")
+    versions.append(tuple(int(part) for part in match.groups()))
+
+major, minor, patch = max(versions)
+next_version = f"{major}.{minor}.{patch + 1}"
+
+for path in paths:
+    with path.open() as f:
+        data = json.load(f)
+    data["version"] = next_version
+    with path.open("w") as f:
+        json.dump(data, f, indent=2)
+        f.write("\n")
+
+print(next_version)
+PYEOF
 }
 
 # ── Detect installed tools ──────────────────────────────────────────────
@@ -180,10 +222,12 @@ PYEOF
 
     # Install the plugin from marketplace
     if command -v claude &>/dev/null; then
-        echo "  → 安装 my-skill 插件..."
+        echo "  → 刷新 Claude Code my-skill 插件..."
         claude plugin marketplace add "$REPO_DIR" 2>/dev/null || true
         claude plugin install my-skill@pocketskill --scope user 2>/dev/null || true
-        echo "  ✓ my-skill 插件已安装"
+        claude plugin update my-skill@pocketskill --scope user 2>/dev/null || true
+        echo "  ✓ Claude Code my-skill 插件已刷新"
+        echo "  ℹ Claude Code 可能需要重启或开启新会话后才能看到新增 skill"
     else
         echo "  ⚠ 未检测到 claude CLI，请在 Claude Code 中手动运行："
         echo "    /plugin install my-skill@pocketskill"
@@ -225,6 +269,14 @@ EOF
     else
         echo "  - my-skill 插件已启用，跳过"
     fi
+
+    if command -v codex &>/dev/null; then
+        echo "  → 重新注册 Codex pocketskill 市场..."
+        codex plugin marketplace add "$REPO_DIR" 2>/dev/null || true
+        codex plugin marketplace upgrade pocketskill 2>/dev/null || true
+        echo "  ✓ Codex pocketskill 市场已重新注册"
+        echo "  ℹ 如果当前 Codex 会话没有出现新增 skill，请开启新会话"
+    fi
 }
 
 # ── Main ─────────────────────────────────────────────────────────────────
@@ -232,6 +284,13 @@ EOF
 main() {
     parse_args "$@"
     resolve_repo_dir
+
+    if [ "$BUMP_PLUGIN_VERSION" = true ]; then
+        local next_version
+        next_version="$(bump_plugin_version)"
+        echo "  ✓ my-skill 插件版本已更新到 $next_version"
+    fi
+
     detect_tools
 
     if [ ${#DETECTED_TOOLS[@]} -eq 0 ]; then

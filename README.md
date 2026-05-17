@@ -190,6 +190,16 @@ git pull --ff-only
 
 如果你是手动 clone 的仓库，在仓库目录里执行同样的命令即可。
 
+## 刷新和重启
+
+`create-skill` 创建新 skill 后会自动运行 `./install.sh --yes --bump-plugin-version`，提升 `my-skill` 插件 patch 版本，并刷新 Claude Code / Codex 的 marketplace 和插件注册。
+
+这通常不需要重新安装 Pocket Skill，但当前已经打开的对话不一定会热加载新增 skill：
+
+- Claude Code 的插件更新机制可能需要重启或开启新会话后生效。
+- Codex 如果当前会话没有显示新增 skill，开启新会话即可重新读取插件列表。
+- 通用 Agent 不受影响，直接读取新建的 `SKILL.md` 就能使用。
+
 ## 分享你的 Skill
 
 公开 skill 可以提交 PR：

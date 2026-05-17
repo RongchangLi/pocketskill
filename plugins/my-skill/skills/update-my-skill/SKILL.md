@@ -49,6 +49,8 @@ This updates the local Pocket Skill checkout, registers the marketplace, and ena
 - Codex: `$<skill-name>`
 - General agents: direct `SKILL.md` file usage
 
+Do not promise hot reload for the current running conversation. If the refreshed skill list is not visible immediately, tell the user to open a new session or restart the tool.
+
 ### 4. Verify
 
 Verify the update:
