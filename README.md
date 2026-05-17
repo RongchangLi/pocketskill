@@ -56,6 +56,12 @@ cd pocketskill
 /my-skill:share-skill
 ```
 
+刷新本地技能库：
+
+```text
+/my-skill:refresh-my-skill
+```
+
 更新 Pocket Skill：
 
 ```text
@@ -80,6 +86,12 @@ $git-workflow
 
 ```text
 $share-skill
+```
+
+刷新本地技能库：
+
+```text
+$refresh-my-skill
 ```
 
 更新 Pocket Skill：
@@ -140,6 +152,7 @@ Follow these instructions when handling Git work for me...
 | --- | --- | --- | --- |
 | `create-skill` | 创建新的公开或私有 skill | `/my-skill:create-skill` | `$create-skill` |
 | `share-skill` | 把公开 skill 通过 GitHub PR 分享出去 | `/my-skill:share-skill` | `$share-skill` |
+| `refresh-my-skill` | 刷新本地 `my-skill` 插件注册，不拉取远程 | `/my-skill:refresh-my-skill` | `$refresh-my-skill` |
 | `update-my-skill` | 从 `origin/main` 更新 Pocket Skill，并刷新插件注册 | `/my-skill:update-my-skill` | `$update-my-skill` |
 | `claude-save-token` | 让 Claude Code 更省 token 地工作 | `/my-skill:claude-save-token` | `$claude-save-token` |
 | `codex-token-saving` | 让 Codex 更省 token 地工作 | `/my-skill:codex-token-saving` | `$codex-token-saving` |
@@ -157,6 +170,7 @@ pocketskill/
 │       └── skills/
 │           ├── create-skill/
 │           ├── share-skill/
+│           ├── refresh-my-skill/
 │           ├── update-my-skill/
 │           └── private-*/                # 私有 skill，默认忽略
 ├── templates/
@@ -192,7 +206,16 @@ git pull --ff-only
 
 ## 刷新和重启
 
-`create-skill` 创建新 skill 后会自动运行 `./install.sh --yes --bump-plugin-version`，提升 `my-skill` 插件 patch 版本，并刷新 Claude Code / Codex 的 marketplace 和插件注册。
+`create-skill` 创建新 skill 后会自动运行 `refresh-my-skill` 的同等流程：`./install.sh --yes --bump-plugin-version`，提升 `my-skill` 插件 patch 版本，并刷新 Claude Code / Codex 的 marketplace 和插件注册。
+
+你也可以手动刷新：
+
+```text
+/my-skill:refresh-my-skill
+$refresh-my-skill
+```
+
+`refresh-my-skill` 只刷新本地插件库，不会拉取远程代码。`update-my-skill` 才会先从 `origin/main` 拉取，再刷新。
 
 这通常不需要重新安装 Pocket Skill，但当前已经打开的对话不一定会热加载新增 skill：
 

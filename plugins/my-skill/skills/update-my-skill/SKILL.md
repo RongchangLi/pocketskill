@@ -1,12 +1,12 @@
 ---
 name: update-my-skill
-description: Update Pocket Skill from origin/main, refresh the bundled my-skill plugin, and re-register Claude Code/Codex plugin settings.
+description: Pull Pocket Skill from origin/main, then refresh the bundled my-skill plugin registration.
 allowed-tools: [git, bash]
 ---
 
 ## Instructions
 
-When the user invokes this skill, update their Pocket Skill installation and refresh the `my-skill` plugin registration.
+When the user invokes this skill, update their Pocket Skill installation from `origin/main`, then refresh the `my-skill` plugin registration. If the user only wants to refresh local skill changes without pulling from remote, use `refresh-my-skill` instead.
 
 All operations must happen from the pocketskill repository root. First locate it:
 
@@ -37,13 +37,13 @@ If switching branches or pulling fails because of local changes, stop and report
 
 ### 3. Refresh My Skill Plugin
 
-After the pull succeeds, refresh the plugin registration:
+After the pull succeeds, refresh the plugin registration without bumping the version locally:
 
 ```
 ./install.sh --yes
 ```
 
-This updates the local Pocket Skill checkout, registers the marketplace, and enables the `my-skill` plugin for detected tools:
+This registers the marketplace and enables the `my-skill` plugin for detected tools:
 
 - Claude Code: `/my-skill:<skill-name>`
 - Codex: `$<skill-name>`

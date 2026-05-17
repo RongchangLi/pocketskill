@@ -65,7 +65,7 @@ Create `SKILL.md` from `templates/SKILL.md.template`, replacing:
 
 ### 4. Refresh Plugin Registration
 
-After creating the file, automatically refresh Pocket Skill registration:
+After creating the file, automatically run the same local refresh used by `refresh-my-skill`:
 
 ```
 ./install.sh --yes --bump-plugin-version
