@@ -1,9 +1,9 @@
 ---
-name: codex-token-saving
+name: codex-save-token
 description: Use when the user asks Codex to save tokens, reduce context usage, keep answers concise, or work in a token-efficient way.
 ---
 
-# Codex Token Saving
+# Codex Save Token
 
 Use this skill when the user wants Codex to reduce token usage without lowering engineering quality.
 

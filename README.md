@@ -155,7 +155,7 @@ Follow these instructions when handling Git work for me...
 | `refresh-my-skill` | 刷新本地 `my-skill` 插件注册，不拉取远程 | `/my-skill:refresh-my-skill` | `$refresh-my-skill` |
 | `update-my-skill` | 从 `origin/main` 更新 Pocket Skill，并刷新插件注册 | `/my-skill:update-my-skill` | `$update-my-skill` |
 | `claude-save-token` | 让 Claude Code 更省 token 地工作 | `/my-skill:claude-save-token` | `$claude-save-token` |
-| `codex-token-saving` | 让 Codex 更省 token 地工作 | `/my-skill:codex-token-saving` | `$codex-token-saving` |
+| `codex-save-token` | 让 Codex 更省 token 地工作 | `/my-skill:codex-save-token` | `$codex-save-token` |
 
 ## 目录结构
 
