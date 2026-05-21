@@ -8,3 +8,6 @@ Thumbs.db
 # IDE files
 .vscode/
 .idea/
+
+# Local Claude Code config
+.claude/

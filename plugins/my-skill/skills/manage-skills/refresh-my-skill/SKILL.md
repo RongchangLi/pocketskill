@@ -34,7 +34,7 @@ Run this from the pocketskill repository root:
 ./install.sh --yes --bump-plugin-version
 ```
 
-This increments the `my-skill` plugin patch version, re-registers the local marketplace, and asks Claude Code / Codex plugin managers to refresh their installed library.
+This increments the `my-skill` plugin patch version, re-registers the local marketplace, exports the categorized source directories into a flat `skills/<name>/SKILL.md` plugin cache, and asks Claude Code / Codex plugin managers to refresh their installed library.
 
 This skill must not run:
 
@@ -47,6 +47,7 @@ This skill must not run:
 ### 3. Verify
 
 - Confirm `plugins/my-skill/skills/` and its subdirectories (`my-skills/`, `manage-skills/`, `private-skills/`) still exist.
+- Confirm the refreshed Claude Code / Codex cache contains flat paths such as `skills/create-skill/SKILL.md`, not only `skills/manage-skills/create-skill/SKILL.md`.
 - If inside a git repository, run `git status --short --branch`.
 - If plugin manifest files changed because the version was bumped, report that clearly.
 

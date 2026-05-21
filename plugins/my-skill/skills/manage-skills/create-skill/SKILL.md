@@ -12,6 +12,8 @@ Skills are organized in three directories under `plugins/my-skill/skills/`:
 - `private-skills/` — user-created private skills (gitignored)
 - `manage-skills/` — built-in management skills (read-only, never create here)
 
+Claude Code and Codex need a flat `skills/<name>/SKILL.md` plugin cache. Do not create files directly in that flat cache; `install.sh` exports it from these source directories during refresh.
+
 First locate the pocketskill repository root:
 
 - Use the current working directory if it contains both `plugins/my-skill/skills/` and `templates/SKILL.md.template`.
@@ -81,6 +83,7 @@ Run it from the pocketskill repository root. This increments the `my-skill` plug
 Important:
 
 - The version bump is intentional. It gives plugin managers a new version to install after a local skill is added.
+- The refresh exports `manage-skills/`, `my-skills/`, and `private-skills/` into the flat cache layout required by Claude Code and Codex.
 - Do not promise that the current running Claude Code or Codex conversation will immediately see the new skill.
 - If the new skill does not appear after refresh, tell the user to open a new session or restart the tool.
 - General agents can use the new skill immediately by reading the created `SKILL.md` directly.

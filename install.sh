@@ -6,6 +6,8 @@ INSTALL_DIR="${POCKETSKILL_HOME:-$HOME/.pocketskill}"
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 CODEX_CONFIG="$HOME/.codex/config.toml"
 CODEX_PLUGIN_CACHE="$HOME/.codex/plugins/cache/pocketskill/my-skill"
+CLAUDE_MARKETPLACE_EXPORT="$HOME/.claude/plugins/marketplaces/pocketskill"
+CODEX_MARKETPLACE_EXPORT="$HOME/.codex/plugins/marketplaces/pocketskill"
 
 DETECTED_TOOLS=()
 ASSUME_YES=false
@@ -159,6 +161,84 @@ with open(sys.argv[1]) as f:
 PYEOF
 }
 
+# ── Plugin export ───────────────────────────────────────────────────────
+
+reset_plugin_dir() {
+    local target="$1"
+
+    case "$target" in
+        "$HOME/.claude/plugins/cache/pocketskill/my-skill/"*|"$HOME/.codex/plugins/cache/pocketskill/my-skill/"*|"$HOME/.claude/plugins/marketplaces/pocketskill"*|"$HOME/.codex/plugins/marketplaces/pocketskill"*) ;;
+        *)
+            echo "拒绝刷新非 Pocket Skill 缓存目录: $target" >&2
+            exit 1
+            ;;
+    esac
+
+    rm -rf "$target"
+    mkdir -p "$target"
+}
+
+copy_skill_group() {
+    local group_dir="$1"
+    local target_skills="$2"
+    local skill_dir skill_name
+
+    [ -d "$group_dir" ] || return 0
+
+    for skill_dir in "$group_dir"/*; do
+        [ -d "$skill_dir" ] || continue
+        [ -f "$skill_dir/SKILL.md" ] || continue
+
+        skill_name="$(basename "$skill_dir")"
+
+        if [ -e "$target_skills/$skill_name" ]; then
+            echo "发现重复 skill 名称: $skill_name" >&2
+            echo "请确保 manage-skills、my-skills、private-skills 中没有重名 skill。" >&2
+            exit 1
+        fi
+
+        cp -R "$skill_dir" "$target_skills/$skill_name"
+    done
+}
+
+export_flat_my_skill_plugin() {
+    local target="$1"
+    local source="$REPO_DIR/plugins/my-skill"
+    local tmp="$target.tmp.$$"
+
+    reset_plugin_dir "$tmp"
+
+    find "$source" -mindepth 1 -maxdepth 1 \
+        ! -name "skills" \
+        ! -name ".DS_Store" \
+        -exec cp -R {} "$tmp/" \;
+
+    mkdir -p "$tmp/skills"
+    copy_skill_group "$source/skills/manage-skills" "$tmp/skills"
+    copy_skill_group "$source/skills/my-skills" "$tmp/skills"
+    copy_skill_group "$source/skills/private-skills" "$tmp/skills"
+
+    reset_plugin_dir "$target"
+    cp -R "$tmp"/. "$target/"
+    rm -rf "$tmp"
+}
+
+export_claude_marketplace() {
+    reset_plugin_dir "$CLAUDE_MARKETPLACE_EXPORT"
+    mkdir -p "$CLAUDE_MARKETPLACE_EXPORT/.claude-plugin" "$CLAUDE_MARKETPLACE_EXPORT/plugins"
+    cp "$REPO_DIR/.claude-plugin/marketplace.json" "$CLAUDE_MARKETPLACE_EXPORT/.claude-plugin/marketplace.json"
+    export_flat_my_skill_plugin "$CLAUDE_MARKETPLACE_EXPORT/plugins/my-skill"
+    echo "  ✓ Claude Code 扁平 marketplace 已生成"
+}
+
+export_codex_marketplace() {
+    reset_plugin_dir "$CODEX_MARKETPLACE_EXPORT"
+    mkdir -p "$CODEX_MARKETPLACE_EXPORT/.agents/plugins" "$CODEX_MARKETPLACE_EXPORT/plugins"
+    cp "$REPO_DIR/.agents/plugins/marketplace.json" "$CODEX_MARKETPLACE_EXPORT/.agents/plugins/marketplace.json"
+    export_flat_my_skill_plugin "$CODEX_MARKETPLACE_EXPORT/plugins/my-skill"
+    echo "  ✓ Codex 扁平 marketplace 已生成"
+}
+
 # ── Detect installed tools ──────────────────────────────────────────────
 
 detect_tools() {
@@ -196,6 +276,8 @@ ask() {
 setup_claude() {
     local settings="$CLAUDE_SETTINGS"
 
+    export_claude_marketplace
+
     # Create settings.json if it doesn't exist
     if [ ! -f "$settings" ]; then
         mkdir -p "$(dirname "$settings")"
@@ -203,10 +285,10 @@ setup_claude() {
     fi
 
     # Use python to merge JSON (safe, handles all edge cases)
-    python3 - "$REPO_DIR" "$settings" << 'PYEOF'
+    python3 - "$CLAUDE_MARKETPLACE_EXPORT" "$settings" << 'PYEOF'
 import json, sys
 
-repo_dir = sys.argv[1]
+marketplace_dir = sys.argv[1]
 settings_path = sys.argv[2]
 
 with open(settings_path) as f:
@@ -217,7 +299,7 @@ config.setdefault("extraKnownMarketplaces", {})
 config["extraKnownMarketplaces"]["pocketskill"] = {
     "source": {
         "source": "directory",
-        "path": repo_dir
+        "path": marketplace_dir
     }
 }
 
@@ -234,9 +316,11 @@ PYEOF
     # Install the plugin from marketplace
     if command -v claude &>/dev/null; then
         echo "  → 刷新 Claude Code my-skill 插件..."
-        claude plugin marketplace add "$REPO_DIR" 2>/dev/null || true
+        claude plugin marketplace add "$CLAUDE_MARKETPLACE_EXPORT" 2>/dev/null || true
+        claude plugin marketplace update pocketskill 2>/dev/null || true
         claude plugin install my-skill@pocketskill --scope user 2>/dev/null || true
         claude plugin update my-skill@pocketskill --scope user 2>/dev/null || true
+        refresh_claude_cache
         echo "  ✓ Claude Code my-skill 插件已刷新"
         echo "  ℹ Claude Code 可能需要重启或开启新会话后才能看到新增 skill"
     else
@@ -250,24 +334,73 @@ PYEOF
 setup_codex() {
     local config="$CODEX_CONFIG"
 
+    export_codex_marketplace
+
     mkdir -p "$(dirname "$config")"
 
     if [ ! -f "$config" ]; then
         touch "$config"
     fi
 
-    # Add marketplace section if not present
-    if ! grep -q '\[marketplaces\.pocketskill\]' "$config"; then
-        cat >> "$config" << EOF
+    python3 - "$config" "$CODEX_MARKETPLACE_EXPORT" << 'PYEOF'
+import sys
+from pathlib import Path
 
-[marketplaces.pocketskill]
-source_type = "local"
-source = "$REPO_DIR"
-EOF
-        echo "  ✓ 已注册 pocketskill 市场到 $config"
-    else
-        echo "  - pocketskill 市场已注册，跳过"
-    fi
+config_path = Path(sys.argv[1])
+marketplace_dir = sys.argv[2]
+lines = config_path.read_text().splitlines()
+
+header = "[marketplaces.pocketskill]"
+start = None
+end = None
+
+for index, line in enumerate(lines):
+    if line.strip() == header:
+        start = index
+        break
+
+if start is None:
+    if lines and lines[-1].strip():
+        lines.append("")
+    lines.extend([
+        header,
+        'source_type = "local"',
+        f'source = "{marketplace_dir}"',
+    ])
+else:
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        stripped = lines[index].strip()
+        if stripped.startswith("[") and stripped.endswith("]"):
+            end = index
+            break
+
+    block = lines[start + 1:end]
+    saw_source_type = False
+    saw_source = False
+    new_block = []
+
+    for line in block:
+        stripped = line.strip()
+        if stripped.startswith("source_type"):
+            new_block.append('source_type = "local"')
+            saw_source_type = True
+        elif stripped.startswith("source"):
+            new_block.append(f'source = "{marketplace_dir}"')
+            saw_source = True
+        else:
+            new_block.append(line)
+
+    if not saw_source_type:
+        new_block.append('source_type = "local"')
+    if not saw_source:
+        new_block.append(f'source = "{marketplace_dir}"')
+
+    lines = lines[:start + 1] + new_block + lines[end:]
+
+config_path.write_text("\n".join(lines) + "\n")
+PYEOF
+    echo "  ✓ 已注册 pocketskill 扁平市场到 $config"
 
     # Enable the plugin
     if ! grep -q '\[plugins."my-skill@pocketskill"\]' "$config"; then
@@ -283,7 +416,7 @@ EOF
 
     if command -v codex &>/dev/null; then
         echo "  → 重新注册 Codex pocketskill 市场..."
-        codex plugin marketplace add "$REPO_DIR" 2>/dev/null || true
+        codex plugin marketplace add "$CODEX_MARKETPLACE_EXPORT" 2>/dev/null || true
         codex plugin marketplace upgrade pocketskill 2>/dev/null || true
         echo "  ✓ Codex pocketskill 市场已重新注册"
         refresh_codex_cache
@@ -296,14 +429,17 @@ refresh_codex_cache() {
     version="$(plugin_version)"
     target="$CODEX_PLUGIN_CACHE/$version"
 
-    if [ -d "$target" ]; then
-        echo "  - Codex my-skill 缓存已存在: $version"
-        return
-    fi
+    export_flat_my_skill_plugin "$target"
+    echo "  ✓ Codex my-skill 扁平缓存已写入: $version"
+}
 
-    mkdir -p "$(dirname "$target")"
-    cp -R "$REPO_DIR/plugins/my-skill" "$target"
-    echo "  ✓ Codex my-skill 缓存已写入: $version"
+refresh_claude_cache() {
+    local version target
+    version="$(plugin_version)"
+    target="$HOME/.claude/plugins/cache/pocketskill/my-skill/$version"
+
+    export_flat_my_skill_plugin "$target"
+    echo "  ✓ Claude Code my-skill 扁平缓存已写入: $version"
 }
 
 # ── Main ─────────────────────────────────────────────────────────────────

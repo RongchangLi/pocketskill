@@ -74,6 +74,8 @@ plugins/my-skill/skills/manage-skills/<name>/SKILL.md
 | `my-skills/` | 📝 Personal skills, Git-tracked, optionally shareable | Create · Edit · Delete · Rename |
 | `manage-skills/` | ⚙️ Built-in management skills, updated with Pocket Skill | Read-only |
 
+Claude Code and Codex discover plugin skills from `skills/<name>/SKILL.md`. Pocket Skill keeps the three source directories above for management, then exports a flat marketplace / plugin cache during install and refresh, so commands like `/my-skill:create-skill` and `$create-skill` remain directly available.
+
 > ⚠️ Never put secrets, tokens, or passwords in any skill.
 
 ## 🗂️ Directory Structure
@@ -107,8 +109,8 @@ pocketskill/
 
 | Command | Behavior |
 | --- | --- |
-| `refresh-my-skill` | Local plugin refresh only, no remote contact. Runs automatically after skill creation. |
-| `update-my-skill` | `git pull --ff-only origin main` + refresh. Pulls the latest built-in skills and community contributions. |
+| `refresh-my-skill` | Local plugin refresh only, no remote contact. Rebuilds the flat marketplace / plugin cache and runs automatically after skill creation. |
+| `update-my-skill` | `git pull --ff-only origin main` + refresh. Pulls the latest built-in skills and community contributions, then rebuilds the flat marketplace / plugin cache. |
 
 **Manual update:**
 

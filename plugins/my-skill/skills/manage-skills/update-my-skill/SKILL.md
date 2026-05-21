@@ -53,6 +53,8 @@ This registers the marketplace and enables the `my-skill` plugin for detected to
 - Codex: `$<skill-name>`
 - General agents: direct `SKILL.md` file usage
 
+The refresh also exports categorized source directories (`manage-skills/`, `my-skills/`, `private-skills/`) into the flat `skills/<name>/SKILL.md` plugin cache required by Claude Code and Codex.
+
 Do not promise hot reload for the current running conversation. If the refreshed skill list is not visible immediately, tell the user to open a new session or restart the tool.
 
 ### 4. Verify
@@ -61,6 +63,7 @@ Verify the update:
 
 - `git status --short --branch` should show the local branch tracking `origin/main`.
 - Confirm `plugins/my-skill/skills/` and its subdirectories (`my-skills/`, `manage-skills/`, `private-skills/`) exist.
+- Confirm the refreshed Claude Code / Codex cache contains flat paths such as `skills/create-skill/SKILL.md`.
 - If Claude Code or Codex was detected by `install.sh`, report the command users can run next, for example `/my-skill:create-skill` or `$create-skill`.
 - When pulling from remote, offer to pull `my-skills` only, `manage-skills` only, or `all` (default).
 

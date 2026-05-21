@@ -74,6 +74,8 @@ plugins/my-skill/skills/manage-skills/<name>/SKILL.md
 | `my-skills/` | 📝 个人 Skill，Git 版本管理，可选择公开分享 | 创建 · 编辑 · 删除 · 重命名 |
 | `manage-skills/` | ⚙️ 内置管理 Skill，随 Pocket Skill 更新 | 只读 |
 
+Claude Code 和 Codex 的插件系统会扫描 `skills/<name>/SKILL.md`。Pocket Skill 保留上面的三类源码目录用于管理，但安装和刷新时会自动导出扁平 marketplace / 插件缓存，所以 `/my-skill:create-skill`、`$create-skill` 这类命令仍然可以直接使用。
+
 > ⚠️ 不要将密钥、token、密码写入任何 skill。
 
 ## 🗂️ 目录结构
@@ -107,8 +109,8 @@ pocketskill/
 
 | 命令 | 行为 |
 | --- | --- |
-| `refresh-my-skill` | 仅刷新本地插件注册，不碰远端。创建新 skill 后自动执行。 |
-| `update-my-skill` | `git pull --ff-only origin main` + 刷新。拉取最新内置 skill 和社区贡献。 |
+| `refresh-my-skill` | 仅刷新本地插件注册并重新生成扁平 marketplace / 插件缓存，不碰远端。创建新 skill 后自动执行。 |
+| `update-my-skill` | `git pull --ff-only origin main` + 刷新。拉取最新内置 skill 和社区贡献，并重新生成扁平 marketplace / 插件缓存。 |
 
 **手动更新：**
 
